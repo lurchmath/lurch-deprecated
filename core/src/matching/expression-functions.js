@@ -438,7 +438,7 @@ export const canBetaReduce = expr =>
  * of) the body of the expression function and return the result.
  * 
  * Note that the process of $\beta$-reduction is usually considered to be the
- * repetition of this process in all possible ways until it termintes (if it
+ * repetition of this process in all possible ways until it terminates (if it
  * does).  That process is implemented in the function
  * {@link module:ExpressionFunctions.fullBetaReduce fullBetaReduce()}.  This
  * function does just one step.
