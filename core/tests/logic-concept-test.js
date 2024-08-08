@@ -277,6 +277,7 @@ describe( 'Reading putdown notation', () => {
                            '                 ' )
         mustParseAsString( '"Backslashes are \\\\, okay?"',
                            'Backslashes are \\, okay?' )
+        mustParseAsString( '":"', ':' )
     } )
 
     it( 'Should not accept string literals with newlines inside', () => {

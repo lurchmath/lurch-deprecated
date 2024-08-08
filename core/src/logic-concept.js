@@ -336,6 +336,7 @@ export class LogicConcept extends MathConcept {
         const attributesRE = /^[+][{].*(?:\n|$)/
         const whitespaceRE = /^\s/
         const symbolRE = /^(?:(?!,|\(|\)|\{|\}|\[|\]|:)\S)+/
+		const givenMarker = { } // "globally" unique value
         // parsing tools
         const isOpenGrouper = g => groupers.some( pair => pair[0] == g )
         const isGrouperPair = ( g, h ) =>
@@ -425,7 +426,7 @@ export class LogicConcept extends MathConcept {
                     problem( 'Invalid JSON attribute: ' + e.message )
                 }
                 // can't modify a comma, colon, or nothing
-                if ( stack.length == 0 || isLast( givenRE )
+                if ( stack.length == 0 || ( stack.last() == givenMarker )
                   || isLast( bindingRE ) || isOpenGrouper( stack.last() ) )
                     problem( 'Attribute JSON has no target to modify' )
                 save( { type : 'attributes', data : json } )
@@ -452,7 +453,7 @@ export class LogicConcept extends MathConcept {
                 }
                 const n = group.contents.length
                 // can't end an environment with a colon
-                if ( exactMatch( givenRE, group.contents[n-1] ) )
+				if ( group.contents[n-1] == givenMarker )
                     problem( 'Cannot end an environment with a colon' )
                 // handle meaning of a declaration, or errors it might contain:
                 if ( group.type == '[ ]' ) {
@@ -503,9 +504,9 @@ export class LogicConcept extends MathConcept {
                 if ( lastOpenGrouper() == '[' )
                     problem( 'Cannot put a colon inside a declaration' )
                 // make sure it's not after another colon
-                if ( isLast( givenRE ) )
+                if ( stack.last() == givenMarker )
                     problem( 'Cannot put two colons in a row' )
-                save()
+                save( givenMarker )
                 shiftNext()
             } else if ( isNext( bindingRE ) ) {
                 // make sure it's not after another comma
@@ -539,7 +540,7 @@ export class LogicConcept extends MathConcept {
             let i = 0
             while ( i < sequence.length ) {
                 // if an entry is a colon, mark the next as a given
-                if ( givenRE.test( sequence[i] ) ) {
+                if ( sequence[i] == givenMarker ) {
                     if ( i + 1 == sequence.length )
                         problem( 'Cannot end the input with a colon' )
                     sequence[i+1].makeIntoA( 'given' )
@@ -567,9 +568,6 @@ export class LogicConcept extends MathConcept {
         const build = tree => {
             // base cases
             if ( typeof( tree ) == 'string' ) {
-                // colons get kept as non-LCs for later application
-                if ( givenRE.test( tree ) )
-                    return tree
                 // strings get interpreted into symbols
                 const LurchSymbol = MathConcept.subclasses.get( 'Symbol' )
                 if ( stringRE.test( tree ) ) {
@@ -581,13 +579,17 @@ export class LogicConcept extends MathConcept {
                 // everything else is already a symbol
                 return new LurchSymbol( tree )
             }
-            if ( tree instanceof Object && tree.type == 'attributes' ) {
+            if ( tree == givenMarker )
+                // colons get kept as non-LCs for later application
+                return tree
+            if ( ( tree instanceof Object ) && tree.type == 'attributes' ) {
                 // JSON that will be attached to a previous sibling when the
                 // applyModifiers function is called by our parent
                 return tree
             }
             // induction step
-            if ( tree instanceof Object && tree.contents instanceof Array ) {
+            if ( ( tree instanceof Object )
+			  && ( tree.contents instanceof Array ) ) {
                 let children = tree.contents.map( build )
                 // handle all special types of children:
                 children = applyModifiers( children )
