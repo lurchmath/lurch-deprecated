@@ -6,7 +6,7 @@
         {
             "label": "Core classes: Run tests in console",
             "type": "shell",
-            "command": "cd core && npm test",
+            "command": "cd core && npm run core-test",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
