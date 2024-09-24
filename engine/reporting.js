@@ -34,49 +34,19 @@
 import * as Lurch from '../core/src/index.js'
 // load the experimental code
 import Compact from './global-validation.js'
-// load chalk and stripAnsi
-import chalk from 'chalk'
-import erase from 'strip-ansi'
 import Utilities from './utils.js'
 // load the commands from Lurch and Compact
 Object.assign( global, Utilities )
 Object.assign( global, Lurch )
 Object.assign( global, Compact )
 
-/////////////////////////////////////////////////////////////////////////
-// Lode syntax highlighting
-
-// Lode Color Theme
-const defaultPen = chalk.ansi256(12)        // Lode blue
-const metavariablePen = chalk.ansi256(3)    // orangish (also 220 is nice)
-const constantPen = chalk.ansi256(226)      // yellowish
-const instantiationPen = chalk.ansi256(8)   // dirt
-const hintPen = chalk.ansi256(93)           // purpleish
-const attributePen = chalk.ansi256(249)     // shade of grey
-const declaredPen = chalk.ansi256(212)      // pinkish
-const attributeKeyPen = chalk.ansi256(2)    // matches string green
-const checkPen = chalk.ansi256(46)          // bright green
-const starPen = chalk.ansi256(226)          // bright gold
-const xPen = chalk.ansi256(9)               // brightred
-const contextPen = chalk.ansi256(56)        // purpleish
-const decPen = chalk.ansi256(30)            // aqua-ish
-const commentPen = chalk.ansi256(252)       // light grey
-const headingPen = chalk.ansi256(226)       // bright Yellow
-const docPen = chalk.ansi256(248)           // light grey text
-const linenumPen = chalk.ansi256(22)        // darkish green
-const itemPen =  chalk.ansi256(214)         // orangish
-const stringPen =  chalk.ansi256(2)         // the green that node useds for strings
-const greyPen = chalk.rgb(130,130,130)      // the grey node uses for 'undefined'
-// const smallPen (maybe TODO some day) \u{1D5BA} is the code for small a
-
-// compute once for efficiency
-const goldstar     = starPen('★')
-const redstar      = xPen('☆')
-const greencheck   = checkPen('✔︎')
-const redx         = xPen('✗')
-const inapplicable = '⊘'     
-const idunno       = '❓'  // the emoji itself is red
-const preemiex     = xPen('⁉︎') 
+import {
+  defaultPen, metavariablePen, constantPen, instantiationPen, hintPen,
+  attributePen, declaredPen, attributeKeyPen, checkPen, starPen, xPen,
+  contextPen, decPen, commentPen, headingPen, docPen, linenumPen,
+  itemPen, stringPen, greyPen, goldstar, redstar, greencheck, redx,
+  inapplicable, idunno, preemiex, chalk, erase
+} from './pens.js'
 
 /////////////////////////////////////////////////////////////////////////
 // Utilities
