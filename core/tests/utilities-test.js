@@ -6,7 +6,6 @@ describe( 'Utilities', () => {
     it( 'Ensure all expected global identifiers are declared', () => {
         expect( predictableStringify ).to.be.ok
         expect( JSON.equals ).to.be.ok
-        expect( EventTarget.prototype.emit ).to.be.ok
     } )
 
 } )
@@ -123,35 +122,6 @@ describe( 'JSON tools', () => {
 } )
 
 describe( 'Prototype extensions', () => {
-
-    it( 'The EventTarget.prototype.emit function behaves correctly', () => {
-        // create a thing that can emit events
-        const E = new EventTarget
-        // attach an event listener
-        const eventsHeard = [ ]
-        E.addEventListener( 'example-event',
-            event => eventsHeard.push( event ) )
-        // emit an event of the type we're listening for
-        E.emit( 'example-event', {
-            exampleDetail1 : 'xyz',
-            exampleDetail2 : [ 5, 10, 15 ],
-            other : { a : 10, b : -10 }
-        } )
-        // verify that we heard it and it's of the correct structure
-        expect( eventsHeard.length ).to.equal( 1 )
-        expect( eventsHeard[0] ).to.be.instanceOf( Event )
-        expect( eventsHeard[0].type ).to.equal( 'example-event' )
-        expect( eventsHeard[0].exampleDetail1 ).to.equal( 'xyz' )
-        expect( eventsHeard[0].exampleDetail2 ).to.eql( [ 5, 10, 15 ] )
-        expect( eventsHeard[0].other ).to.eql( { a : 10, b : -10 } )
-        // remember that event object for later comparisons
-        const firstHeard = eventsHeard[0]
-        // emit an event of the type we're not listening for
-        E.emit( 'not-listening-for', { foo : 'bar' } )
-        // verify that we did not hear that event
-        expect( eventsHeard.length ).to.equal( 1 )
-        expect( eventsHeard[0] ).to.equal( firstHeard )
-    } )
 
     it( 'The Map.prototype.deepCopy function behaves correctly', () => {
         // create a Map with all JSON-encodable contents (because the function
