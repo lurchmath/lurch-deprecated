@@ -9,7 +9,7 @@
             "command": "cd core && npm test",
             "problemMatcher": [],
             "group": {
-                "kind": "build",
+                "kind": "test",
                 "isDefault": true
             }
         },
@@ -18,7 +18,7 @@
             "type": "shell",
             "command": "cd core && npm run test-server",
             "problemMatcher": [],
-            "group": "build"
+            "group": "test"
         },
         {
             "label": "Core classes: Rebuild database",
@@ -26,6 +26,13 @@
             "command": "cd core && npm run build-db",
             "problemMatcher": [],
             "group": "build"
+        },
+        {
+            "label": "CLI tools: Run Lode",
+            "type": "shell",
+            "command": "node engine/lode.js",
+            "problemMatcher": [],
+            "group": "command"
         }
     ]
 }
