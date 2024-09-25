@@ -1666,6 +1666,65 @@ describe( 'MathConcept copying and serialization', () => {
         expect( DAB.getAttribute( 2 ) ).to.equal( 7 )
     } )
 
+    it( 'Supports copying just some children using slice()', () => {
+        // Make a nonatomic MathConcept for testing.
+        let A, AA, AB, AC, B, C, D
+        const nonatomic = new MathConcept(
+            A = new MathConcept(
+                AA = new MathConcept,
+                AB = new MathConcept,
+                AC = new MathConcept
+            ),
+            B = new MathConcept,
+            C = new MathConcept,
+            D = new MathConcept
+        )
+        AB.setAttribute( 2, 7 )
+        C.setAttribute( 'is C', 'yes' )
+        // Make various copies and test them against the original
+        // First, a copy that uses slice() to include ALL children
+        const copy1 = nonatomic.slice()
+        expect( copy1 ).not.to.equal( nonatomic )
+        expect( copy1.children().length ).to.equal( 4 )
+        expect( copy1.child( 0 ).equals( A ) ).to.equal( true )
+        expect( copy1.child( 1 ).equals( B ) ).to.equal( true )
+        expect( copy1.child( 2 ).equals( C ) ).to.equal( true )
+        expect( copy1.child( 3 ).equals( D ) ).to.equal( true )
+        expect( copy1.child( 0, 1 ).getAttribute( 2 ) ).to.equal( 7 )
+        expect( copy1.child( 2 ).getAttribute( 'is C' ) ).to.equal( 'yes' )
+        // Next, a copy that uses only children 1 and onward
+        const copy2 = nonatomic.slice( 1 )
+        expect( copy2 ).not.to.equal( nonatomic )
+        expect( copy2.children().length ).to.equal( 3 )
+        expect( copy2.child( 0 ).equals( B ) ).to.equal( true )
+        expect( copy2.child( 1 ).equals( C ) ).to.equal( true )
+        expect( copy2.child( 2 ).equals( D ) ).to.equal( true )
+        expect( copy2.child( 1 ).getAttribute( 'is C' ) ).to.equal( 'yes' )
+        // Next, a copy that uses only children up to but not including 2
+        const copy3 = nonatomic.slice( 0, 2 )
+        expect( copy3 ).not.to.equal( nonatomic )
+        expect( copy3.children().length ).to.equal( 2 )
+        expect( copy3.child( 0 ).equals( A ) ).to.equal( true )
+        expect( copy3.child( 1 ).equals( B ) ).to.equal( true )
+        expect( copy3.child( 0, 1 ).getAttribute( 2 ) ).to.equal( 7 )
+        // Next, a copy that uses children 1 and 2
+        const copy4 = nonatomic.slice( 1, 3 )
+        expect( copy4 ).not.to.equal( nonatomic )
+        expect( copy4.children().length ).to.equal( 2 )
+        expect( copy4.child( 0 ).equals( B ) ).to.equal( true )
+        expect( copy4.child( 1 ).equals( C ) ).to.equal( true )
+        expect( copy4.child( 1 ).getAttribute( 'is C' ) ).to.equal( 'yes' )
+        // Next, a copy that uses just one child
+        const copy5 = nonatomic.slice( 1, 2 )
+        expect( copy5 ).not.to.equal( nonatomic )
+        expect( copy5.children().length ).to.equal( 1 )
+        expect( copy5.child( 0 ).equals( B ) ).to.equal( true )
+        // Finally, a copy that uses no children
+        const copy6 = nonatomic.slice( 2, 2 )
+        expect( copy6 ).not.to.equal( nonatomic )
+        expect( copy6.children().length ).to.equal( 0 )
+    } )
+
     it( 'Serializes and deserializes hierarchies correctly', () => {
         // Begin with a trivial example, a single node hierarchy with no attributes.
         let child1, child2

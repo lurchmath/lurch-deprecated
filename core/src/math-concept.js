@@ -501,6 +501,30 @@ export class MathConcept {
     allButLastChild () { return this._children.slice( 0, -1 ) }
 
     /**
+     * Return a copy of this MathConcept, but retaining only children within the
+     * given range, from the given starting index (inclusive) to the given
+     * ending index (exclusive).  Either can be omitted, in which case the
+     * defaults are given below.
+     * 
+     * @param {number} [start = 0] - the starting index for the child that will
+     *   be the first child in the copy
+     * @param {number} [end = this.numChildren()] - the ending index that is one
+     *   more than the index of the child that will be the last child in the
+     *   copy
+     */
+    slice ( start = 0, end = this.numChildren() ) {
+        const n = this.numChildren()
+        if ( start < 0 ) start += n
+        if ( end < 0 ) end += n
+        const result = this.copy()
+        // Must call children() below, which executes a slice() before forEach()
+        result.children().forEach( ( child, index ) => {
+            if ( index < start || end <= index ) child.remove()
+        } )
+        return result 
+    }
+
+    /**
      * My address within the given ancestor, as a sequence of indices
      * `[i1,i2,...,in]` such that `ancestor.child(i1).child(i2)....child(in)` is
      * this MathConcept.
