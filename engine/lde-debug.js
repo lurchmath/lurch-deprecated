@@ -9,8 +9,6 @@
  * and adjust the path to src accordingly.
  */
     
-import './disable-event-target.js'
-
 let testarg
 if (typeof window === 'object') {
   console.log(`In a browser window.`)

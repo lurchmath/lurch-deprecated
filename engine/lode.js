@@ -35,16 +35,6 @@ global.xml = (s) => new XMLParser({ ignoreAttributes:false }).parse(s)
 import { latexToLurch } from '../parsers/index.js'
 // import { getConverter } from './utils/math-live.js'
 
-// In LODE we have no need for EventTarget because we don't edit MCs in real
-// time and react to changes.  Importing this BEFORE importing math-concept.js
-// disables that.  This keeps the size and complexity of LCs simpler and avoids
-// spamming 'inspect' reports.
-//
-// NOTE: do not import any lurch modules above this point (in case they load
-// something that loads MathConcept first before we get a chance to import the
-// following).
-import './disable-event-target.js'
-// with that disabled, now we can load everything from index.js and other LDE tools
 import * as Lurch from '../core/src/index.js'
 import { Problem } from '../core/src/matching/problem.js'
 import CNF from '../core/src/validation/conjunctive-normal-form.js'
