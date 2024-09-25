@@ -797,6 +797,7 @@ describe( 'MathConcept lookup', () => {
         expect( A.child( -2, 0 ) ).to.equal( AAA )
         expect( A.child( -2, -1 ) ).to.equal( AAA )
         expect( A.child( -2, 1 ) ).to.be.undefined
+
         // same for index
         expect( root.index( [ 2 ] ) ).to.be.undefined
         expect( root.index( [ -1 ] ) ).to.equal( B )
@@ -816,8 +817,6 @@ describe( 'MathConcept lookup', () => {
         expect( A.index( [ -2, 0 ] ) ).to.equal( AAA )
         expect( A.index( [ -2, -1 ] ) ).to.equal( AAA )
         expect( A.index( [ -2, 1 ] ) ).to.be.undefined
-        
-
     } )
 
     it( 'Correctly computes ancestor chains', () => {

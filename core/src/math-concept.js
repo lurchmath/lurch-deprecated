@@ -381,24 +381,33 @@ export class MathConcept {
     children () { return this._children.slice() }
 
     /**
-     * Get the child of this MathConcept at index i.
+     * Get the child of this MathConcept at the given index.  If the index is in
+     * the normal range (i.e., $\{0,1,...,n-1\}$ when there are n children) then
+     * it will be used as is, but if it is in the range $\{-n,-n+1,...,-1\}$
+     * then it will be treated as an index from the end of the children array.
+     * All other indices will result in an undefined return value.
+     * 
+     * If more than one index is passed (e.g., `X.child(1,2,3)`) then this
+     * function will act as if chained with itself
+     * (e.g., `X.child(1).child(2).child(3)`).  Indeed, if one omits even the
+     * index, then the degenerate "chain" of just `X` will be returned (the
+     * parent rather than any of its children).
      *
-     * If the index is invalid (that is, it is anything other than one of
-     * {0,1,...,n-1\} if there are n children) then undefined will be
-     * returned instead.
-     *
-     * @param {number} i - The index of the child being fetched
+     * @param {number} index - The index of the child being fetched
+     * @param {number[]} others - optional other indices for chaining as
+     *   described above
      * @return {MathConcept} The child at the given index, or undefined if none
      * @see {@link MathConcept#parent parent()}
      * @see {@link MathConcept#children children()}
      * @see {@link MathConcept#firstChild firstChild()}
      * @see {@link MathConcept#lastChild lastChild()}
      */
-    child ( ...indices ) {
-        return indices.reduce( (x,n) =>
-               typeof(x)=='undefined' ? undefined :
-                 x.children()[n < 0 ? x.children().length + n : n],this)
+    child ( index, ...others ) {
+        if ( typeof index == 'undefined' ) return this
+        if ( index < 0 ) index += this._children.length
+        return this._children[index]?.child( ...others )
     }
+
     /**
      * The number of children of this MathConcept
      * @return {number} A nonnegative integer indicating the number of children
