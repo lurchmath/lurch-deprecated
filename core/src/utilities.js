@@ -86,25 +86,6 @@ JSON.equals = ( x, y ) => {
 JSON.copy = json => JSON.parse( JSON.stringify( json ) )
 
 /**
- * The function below extends the built-in EventTarget class with new
- * functionality.
- * 
- * @class EventTarget
- */
-
-/**
- * Extend the EventTarget prototype with a convenience method for emitting new
- * events.  Mimics the function of the same name from node.js, but here in the
- * browser.
- * 
- * @param {string} type - The type of event being emitted, as a string name
- * @param {object} details - Any additional fields to copy into the Event object
- */
-EventTarget.prototype.emit = function ( type, details = { } ) {
-    this.dispatchEvent( Object.assign( new Event( type ), details ) )
-}
-
-/**
  * The function below extends the built-in Map class with new functionality.
  * 
  * @class Map

@@ -2,18 +2,6 @@
 import { Connection } from './connection.js'
 import { SourceMap  } from './source-map.js'
 
-// Check if the global.disableEventTarget is set to true, and if it is, don't 
-// use the EventTarget superclass.  This can then be set by a client by loading
-// the disable-event-target.js module before loading math-concept.js. The default
-// for all other clients is to allow it.  Note that we have to test if global is 
-// undeclared first, for when this module is being imported in a browser.
-//
-let Superclass = 
-  ((typeof global !== 'undefined' && global.disableEventTarget) ||
-  (typeof window !== 'undefined' && window.disableEventTarget)) 
-    ? class { emit () { } } 
-    : EventTarget
-
 /**
  * The MathConcept class, an n-ary tree of MathConcept instances, using functions
  * like {@link MathConcept#parent parent()} and {@link MathConcept#children children()}
@@ -36,7 +24,7 @@ let Superclass =
  * This second category of subclasses is not intended to be fully specified, but can
  * grow and change over time, as new classes in that category are developed.
  */
-export class MathConcept extends Superclass {
+export class MathConcept {
   
     //////
     //
@@ -51,7 +39,6 @@ export class MathConcept extends Superclass {
      *   (using {@link MathConcept#insertChild insertChild()})
      */
     constructor ( ...children ) {
-        super()
         this._dirty = false
         this._parent = null
         this._children = [ ]
@@ -165,11 +152,6 @@ export class MathConcept extends Superclass {
      * linked to above.  Calling this function overwrites any old value that was
      * stored under the given `key`.
      *
-     * The change events are fired only if the new value is different from the
-     * old value, according to `JSON.equals()`.
-     *
-     * @fires MathConcept#willBeChanged
-     * @fires MathConcept#wasChanged
      * @param {*} key - The key that indexes the key-value pair we are about to
      *   insert or overwrite; this must be a string or will be converted into one
      * @param {*} value - The value to associate with the given key; this must
@@ -179,61 +161,8 @@ export class MathConcept extends Superclass {
     setAttribute ( key, value ) {
         key = `${key}`
         const oldValue = this._attributes.get( key )
-        if ( !JSON.equals( value, oldValue ) ) {
-            /**
-             * An event of this type is fired in a MathConcept immediately before
-             * one of that MathConcept's attributes is changed.
-             *
-             * @event MathConcept#willBeChanged
-             * @type {Object}
-             * @property {MathConcept} concept - The MathConcept emitting the
-             *   event, which will soon have one of its attributes changed
-             * @property {*} key - A string value, the key of the attribute
-             *   that is about to change
-             * @property {*} oldValue - A JavaScript value amenable to JSON
-             *   encoding, the value currently associated with the key; this is
-             *   undefined if the value is being associated with an unused key
-             * @property {*} newValue - A JavaScript value amenable to JSON
-             *   encoding, the value about to be associated with the key; this
-             *   is undefined if the key-value pair is being removed rather than
-             *   changed to have a new value
-             * @see {@link MathConcept#wasChanged wasChanged}
-             * @see {@link MathConcept#setAttribute setAttribute()}
-             */
-            this.emit( 'willBeChanged', {
-                concept : this,
-                key : key,
-                oldValue : oldValue,
-                newValue : value
-            } )
+        if ( !JSON.equals( value, oldValue ) )
             this._attributes.set( key, value )
-            /**
-             * An event of this type is fired in a MathConcept immediately after
-             * one of that MathConcept's attributes is changed.
-             *
-             * @event MathConcept#wasChanged
-             * @type {Object}
-             * @property {MathConcept} concept - The MathConcept emitting the
-             *   event, which just had one of its attributes changed
-             * @property {*} key - A string value, the key of the attribute
-             *   that just changed
-             * @property {*} oldValue - A JavaScript value amenable to JSON
-             *   encoding, the value formerly associated with the key; this is
-             *   undefined if the value is being associated with an unused key
-             * @property {*} newValue - A JavaScript value amenable to JSON
-             *   encoding, the value now associated with the key; this is
-             *   undefined if the key-value pair is being removed rather than
-             *   changed to have a new value
-             * @see {@link MathConcept#willBeChanged willBeChanged}
-             * @see {@link MathConcept#setAttribute setAttribute()}
-             */
-            this.emit( 'wasChanged', {
-                concept : this,
-                key : key,
-                oldValue : oldValue,
-                newValue : value
-            } )
-        }
     }
 
     /**
@@ -244,14 +173,6 @@ export class MathConcept extends Superclass {
      * attribute dictionary.  See the restrictions on keys and values in the
      * documentation linked to above.
      *
-     * The change events are fired only if the given keys are actually currently
-     * in use by some key-value pairs in the MathConcept.  If you pass multiple
-     * keys to be removed, each will generate a separate pair of
-     * {@link MathConcept#willBeChanged willBeChanged} and
-     * {@link MathConcept#wasChanged wasChanged} events.
-     *
-     * @fires MathConcept#willBeChanged
-     * @fires MathConcept#wasChanged
      * @param {Array} keys - The list of keys indicating which key-value pairs
      *   should be removed from this MathConcept; each of these keys must be a
      *   string, or it will be converted into one; if this parameter is omitted,
@@ -264,22 +185,8 @@ export class MathConcept extends Superclass {
         }
         for ( let key of keys ) {
             key = `${key}`
-            if ( this._attributes.has( key ) ) {
-                const oldValue = this._attributes.get( key )
-                this.emit( 'willBeChanged', {
-                    concept : this,
-                    key : key,
-                    oldValue : oldValue,
-                    newValue : undefined
-                } )
+            if ( this._attributes.has( key ) )
                 this._attributes.delete( key )
-                this.emit( 'wasChanged', {
-                    concept : this,
-                    key : key,
-                    oldValue : oldValue,
-                    newValue : undefined
-                } )
-            }
         }
     }
 
@@ -290,12 +197,6 @@ export class MathConcept extends Superclass {
      * for ease of use in method chaining.
      *
      * Example use: `const S = new MathConcept().attr( { k1 : 'v1', k2 : 'v2' } )`
-     *
-     * Because this calls {@link MathConcept#setAttribute setAttribute()} zero or
-     * more times, as dictated by the contents of `attributes`, it may result in
-     * multiple firings of the events
-     * {@link MathConcept#willBeChanged willBeChanged} and
-     * {@link MathConcept#wasChanged wasChanged}.
      *
      * @param {Object|Map|Array} attributes - A collection of key-value pairs to
      *   add to this MathConcept's attributes.  This can be a JavaScript Object,
@@ -330,10 +231,7 @@ export class MathConcept extends Superclass {
      * The attributes are copied deeply, so that if the values are arrays or
      * objects, they are not shared between the two MathConcepts.  The
      * attributes are copied using {@link MathConcept#attr attr()}, which calls
-     * {@link MathConcept#setAttribute setAttribute()} on each key separately,
-     * thus possibly generating many pairs of
-     * {@link MathConcept#willBeChanged willBeChanged} and
-     * {@link MathConcept#wasChanged wasChanged} events.
+     * {@link MathConcept#setAttribute setAttribute()} on each key separately.
      * 
      * If this MathConcept shares some attribute keys with the one passed as the
      * parameter, the attributes of `mathConcept` will overwrite the attributes
@@ -483,24 +381,33 @@ export class MathConcept extends Superclass {
     children () { return this._children.slice() }
 
     /**
-     * Get the child of this MathConcept at index i.
+     * Get the child of this MathConcept at the given index.  If the index is in
+     * the normal range (i.e., $\{0,1,...,n-1\}$ when there are n children) then
+     * it will be used as is, but if it is in the range $\{-n,-n+1,...,-1\}$
+     * then it will be treated as an index from the end of the children array.
+     * All other indices will result in an undefined return value.
+     * 
+     * If more than one index is passed (e.g., `X.child(1,2,3)`) then this
+     * function will act as if chained with itself
+     * (e.g., `X.child(1).child(2).child(3)`).  Indeed, if one omits even the
+     * index, then the degenerate "chain" of just `X` will be returned (the
+     * parent rather than any of its children).
      *
-     * If the index is invalid (that is, it is anything other than one of
-     * {0,1,...,n-1\} if there are n children) then undefined will be
-     * returned instead.
-     *
-     * @param {number} i - The index of the child being fetched
+     * @param {number} index - The index of the child being fetched
+     * @param {number[]} others - optional other indices for chaining as
+     *   described above
      * @return {MathConcept} The child at the given index, or undefined if none
      * @see {@link MathConcept#parent parent()}
      * @see {@link MathConcept#children children()}
      * @see {@link MathConcept#firstChild firstChild()}
      * @see {@link MathConcept#lastChild lastChild()}
      */
-    child ( ...indices ) {
-        return indices.reduce( (x,n) =>
-               typeof(x)=='undefined' ? undefined :
-                 x.children()[n < 0 ? x.children().length + n : n],this)
+    child ( index, ...others ) {
+        if ( typeof index == 'undefined' ) return this
+        if ( index < 0 ) index += this._children.length
+        return this._children[index]?.child( ...others )
     }
+
     /**
      * The number of children of this MathConcept
      * @return {number} A nonnegative integer indicating the number of children
@@ -592,6 +499,30 @@ export class MathConcept extends Superclass {
      * @see {@link MathConcept#allButFirstChild allButFirstChild()}
      */
     allButLastChild () { return this._children.slice( 0, -1 ) }
+
+    /**
+     * Return a copy of this MathConcept, but retaining only children within the
+     * given range, from the given starting index (inclusive) to the given
+     * ending index (exclusive).  Either can be omitted, in which case the
+     * defaults are given below.
+     * 
+     * @param {number} [start = 0] - the starting index for the child that will
+     *   be the first child in the copy
+     * @param {number} [end = this.numChildren()] - the ending index that is one
+     *   more than the index of the child that will be the last child in the
+     *   copy
+     */
+    slice ( start = 0, end = this.numChildren() ) {
+        const n = this.numChildren()
+        if ( start < 0 ) start += n
+        if ( end < 0 ) end += n
+        const result = this.copy()
+        // Must call children() below, which executes a slice() before forEach()
+        result.children().forEach( ( child, index ) => {
+            if ( index < start || end <= index ) child.remove()
+        } )
+        return result 
+    }
 
     /**
      * My address within the given ancestor, as a sequence of indices
@@ -825,8 +756,6 @@ export class MathConcept extends Superclass {
      *
      * @param {MathConcept} child - the child to insert
      * @param {number} atIndex - the index at which the new child will be
-     * @fires MathConcept#willBeInserted
-     * @fires MathConcept#wasInserted
      * @see {@link MathConcept#children children()}
      * @see {@link MathConcept#setChildren setChildren()}
      * @see {@link MathConcept#child child()}
@@ -840,52 +769,13 @@ export class MathConcept extends Superclass {
         let walk = this
         while ( ( walk = walk.parent() ) != null ) {
             if ( walk === child ) {
-                this.remove();
-                break;
+                this.remove()
+                break
             }
         }
         child.remove()
-        /**
-         * An event of this type is fired in a MathConcept immediately before that
-         * MathConcept is inserted as a child within a new parent.
-         *
-         * @event MathConcept#willBeInserted
-         * @type {Object}
-         * @property {MathConcept} child - The MathConcept emitting the event, which
-         *   will soon be a child of a new parent MathConcept
-         * @property {MathConcept} parent - The new parent the child will have
-         *   after insertion
-         * @property {number} index - The new index the child will have after
-         *   insertion
-         * @see {@link MathConcept#wasInserted wasInserted}
-         * @see {@link MathConcept#insertChild insertChild()}
-         */
-        child.emit( 'willBeInserted', {
-            child : child,
-            parent : this,
-            index : atIndex
-        } )
         this._children.splice( atIndex, 0, child )
         child._parent = this
-        /**
-         * An event of this type is fired in a MathConcept immediately after that
-         * MathConcept is inserted as a child within a new parent.
-         *
-         * @event MathConcept#wasInserted
-         * @type {Object}
-         * @property {MathConcept} child - The MathConcept emitting the event, which
-         *   just became a child of a new parent MathConcept
-         * @property {MathConcept} parent - The new parent the child now has
-         * @property {number} index - The index the child now has in its new
-         *   parent
-         * @see {@link MathConcept#willBeInserted willBeInserted}
-         * @see {@link MathConcept#insertChild insertChild()}
-         */
-        child.emit( 'wasInserted', {
-            child : child,
-            parent : this,
-            index : atIndex
-        } )
     }
 
     /**
@@ -893,59 +783,13 @@ export class MathConcept extends Superclass {
      * and set our parent pointer to null, thus severing the relationship.  If
      * this has no parent, do nothing.
      *
-     * @fires MathConcept#willBeRemoved
      * @see {@link MathConcept#parent parent()}
      * @see {@link MathConcept#removeChild removeChild()}
      */
     remove () {
         if ( this._parent != null ) {
-            const parent = this._parent
-            const index = this.indexInParent()
-            /**
-             * This event is fired in a MathConcept immediately before that
-             * MathConcept is removed from its parent MathConcept.  This could be
-             * from a simple removal, or it might be the first step in a
-             * re-parenting process that ends up with the MathConcept as the child
-             * of a new parent.
-             *
-             * @event MathConcept#willBeRemoved
-             * @type {Object}
-             * @property {MathConcept} child - The MathConcept emitting the event,
-             *   which is about to be removed from its parent MathConcept
-             * @property {MathConcept} parent - The current parent MathConcept
-             * @property {number} index - The index the child has in its parent,
-             *   before the removal
-             * @see {@link MathConcept#remove remove()}
-             */
-            this.emit( 'willBeRemoved', {
-                child : this,
-                parent : parent,
-                index : index
-            } )
             this._parent._children.splice( this.indexInParent(), 1 )
             this._parent = null
-            /**
-             * This event is fired in a MathConcept immediately after that
-             * MathConcept is removed from its parent MathConcept.  This could be
-             * from a simple removal, or it might be the first step in a
-             * re-parenting process that ends up with the MathConcept as the child
-             * of a new parent.
-             *
-             * @event MathConcept#wasRemoved
-             * @type {Object}
-             * @property {MathConcept} child - The MathConcept emitting the event,
-             *   which was just removed from its parent MathConcept
-             * @property {MathConcept} parent - The old parent MathConcept from
-             *   which the child was just removed
-             * @property {number} index - The index the child had in its parent,
-             *   before the removal
-             * @see {@link MathConcept#remove remove()}
-             */
-            this.emit( 'wasRemoved', {
-                child : this,
-                parent : parent,
-                index : index
-            } )
         }
     }
 

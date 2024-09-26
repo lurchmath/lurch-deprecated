@@ -604,112 +604,6 @@ describe( 'MathConcept manipulation', () => {
 
 } )
 
-describe( 'Events for changes to MathConcept instances', () => {
-
-    // I'm rollying my own spy functions, because chai's are annoying to use in
-    // the browser.
-    const makeSpy = () => {
-        const result = ( ...args ) => result.callRecord.push( args )
-        result.callRecord = [ ]
-        return result
-    }
-
-    // Set up two MathConcepts with lots of event listeners before each test.
-    let A = null
-    let B = null
-    let ALs = [ ]
-    let BLs = [ ]
-    beforeEach( () => {
-        A = new MathConcept
-        ALs = {
-            wasInserted : makeSpy(),
-            wasRemoved : makeSpy(),
-            willBeInserted : makeSpy(),
-            willBeRemoved : makeSpy()
-        }
-        A.addEventListener( 'wasInserted', ALs.wasInserted )
-        A.addEventListener( 'wasRemoved', ALs.wasRemoved )
-        A.addEventListener( 'willBeInserted', ALs.willBeInserted )
-        A.addEventListener( 'willBeRemoved', ALs.willBeRemoved )
-        B = new MathConcept
-        BLs = {
-            wasInserted : makeSpy(),
-            wasRemoved : makeSpy(),
-            willBeInserted : makeSpy(),
-            willBeRemoved : makeSpy()
-        }
-        B.addEventListener( 'wasInserted', BLs.wasInserted )
-        B.addEventListener( 'wasRemoved', BLs.wasRemoved )
-        B.addEventListener( 'willBeInserted', BLs.willBeInserted )
-        B.addEventListener( 'willBeRemoved', BLs.willBeRemoved )
-    } )
-
-    it( 'Should begin with no event listeners called', () => {
-        expect( ALs.wasInserted.callRecord ).to.eql( [ ] )
-        expect( ALs.wasRemoved.callRecord ).to.eql( [ ] )
-        expect( ALs.willBeInserted.callRecord ).to.eql( [ ] )
-        expect( ALs.willBeRemoved.callRecord ).to.eql( [ ] )
-        expect( BLs.wasInserted.callRecord ).to.eql( [ ] )
-        expect( BLs.wasRemoved.callRecord ).to.eql( [ ] )
-        expect( BLs.willBeInserted.callRecord ).to.eql( [ ] )
-        expect( BLs.willBeRemoved.callRecord ).to.eql( [ ] )
-    } )
-
-    it( 'Should send insertion and removal events', () => {
-        let args
-
-        // Insert one as a child of the other
-        B.insertChild( A )
-        // A.willBeInserted got called once, with correct parent, child, and index
-        expect( ALs.willBeInserted.callRecord.length ).to.equal( 1 )
-        args = ALs.willBeInserted.callRecord[0]
-        expect( args.length ).to.equal( 1 )
-        expect( args[0].parent ).to.equal( B )
-        expect( args[0].child ).to.equal( A )
-        expect( args[0].index ).to.equal( 0 )
-        // A.wasInserted got called once, with same data
-        expect( ALs.wasInserted.callRecord.length ).to.equal( 1 )
-        args = ALs.wasInserted.callRecord[0]
-        expect( args.length ).to.equal( 1 )
-        expect( args[0].parent ).to.equal( B )
-        expect( args[0].child ).to.equal( A )
-        expect( args[0].index ).to.equal( 0 )
-        // No other handlers got called
-        expect( ALs.willBeRemoved.callRecord.length ).to.equal( 0 )
-        expect( ALs.wasRemoved.callRecord.length ).to.equal( 0 )
-        expect( BLs.willBeInserted.callRecord.length ).to.equal( 0 )
-        expect( BLs.wasInserted.callRecord.length ).to.equal( 0 )
-        expect( BLs.willBeRemoved.callRecord.length ).to.equal( 0 )
-        expect( BLs.wasRemoved.callRecord.length ).to.equal( 0 )
-
-        // Remove the child
-        A.remove()
-        // A.willBeRemoved got called once, with correct parent, child, and index
-        expect( ALs.willBeRemoved.callRecord.length ).to.equal( 1 )
-        args = ALs.willBeRemoved.callRecord[0]
-        expect( args.length ).to.equal( 1 )
-        expect( args[0].parent ).to.equal( B )
-        expect( args[0].child ).to.equal( A )
-        expect( args[0].index ).to.equal( 0 )
-        // A.wasRemoved got called once, with same data
-        expect( ALs.wasRemoved.callRecord.length ).to.equal( 1 )
-        args = ALs.wasRemoved.callRecord[0]
-        expect( args.length ).to.equal( 1 )
-        expect( args[0].parent ).to.equal( B )
-        expect( args[0].child ).to.equal( A )
-        expect( args[0].index ).to.equal( 0 )
-        // The two insertion handlers still have been called only once, earlier
-        expect( ALs.willBeInserted.callRecord.length ).to.equal( 1 )
-        expect( ALs.wasInserted.callRecord.length ).to.equal( 1 )
-        // And all of B's events still haven't been called at all
-        expect( BLs.willBeInserted.callRecord.length ).to.equal( 0 )
-        expect( BLs.wasInserted.callRecord.length ).to.equal( 0 )
-        expect( BLs.willBeRemoved.callRecord.length ).to.equal( 0 )
-        expect( BLs.wasRemoved.callRecord.length ).to.equal( 0 )
-    } )
-
-} )
-
 describe( 'MathConcept lookup', () => {
 
     it( 'Correctly computes indices in parent MathConcept', () => {
@@ -903,6 +797,7 @@ describe( 'MathConcept lookup', () => {
         expect( A.child( -2, 0 ) ).to.equal( AAA )
         expect( A.child( -2, -1 ) ).to.equal( AAA )
         expect( A.child( -2, 1 ) ).to.be.undefined
+
         // same for index
         expect( root.index( [ 2 ] ) ).to.be.undefined
         expect( root.index( [ -1 ] ) ).to.equal( B )
@@ -922,8 +817,6 @@ describe( 'MathConcept lookup', () => {
         expect( A.index( [ -2, 0 ] ) ).to.equal( AAA )
         expect( A.index( [ -2, -1 ] ) ).to.equal( AAA )
         expect( A.index( [ -2, 1 ] ) ).to.be.undefined
-        
-
     } )
 
     it( 'Correctly computes ancestor chains', () => {
@@ -1521,104 +1414,11 @@ describe( 'MathConcept attributes', () => {
         // attributes and methods present (just a sample here)
         expect( S.children ).to.be.ok
         expect( S.getAttribute ).to.be.ok
-        expect( S.emit ).to.be.ok
         // verify that none of those are present in its attributes as a
         // MathConcept, i.e., with getAttribute()
         expect( S.getAttribute( 'children' ) ).not.to.be.ok
         expect( S.getAttribute( 'getAttribute' ) ).not.to.be.ok
         expect( S.getAttribute( 'emit' ) ).not.to.be.ok
-    } )
-
-    it( 'Emits events when adding/removing/changing attributes', () => {
-        // make two MathConcepts
-        const S1 = new MathConcept
-        const S2 = new MathConcept
-        // connect event handlers to each for recording events
-        const heardEvents1 = [ ]
-        const heardEvents2 = [ ]
-        S1.addEventListener( 'willBeChanged', e => heardEvents1.push( e ) )
-        S2.addEventListener( 'willBeChanged', e => heardEvents2.push( e ) )
-        S1.addEventListener( 'wasChanged', e => heardEvents1.push( e ) )
-        S2.addEventListener( 'wasChanged', e => heardEvents2.push( e ) )
-        // verify that all requisite events are called in the right order when
-        // adding an attribute
-        S1.setAttribute( 'x', 'y' )
-        expect( heardEvents1.length ).to.equal( 2 )
-        expect( heardEvents1[0] ).to.be.instanceOf( Event )
-        expect( heardEvents1[0].type ).to.equal( 'willBeChanged' )
-        expect( heardEvents1[0].concept ).to.equal( S1 )
-        expect( heardEvents1[0].key ).to.equal( 'x' )
-        expect( heardEvents1[0].oldValue ).to.equal( undefined )
-        expect( heardEvents1[0].newValue ).to.equal( 'y' )
-        expect( heardEvents1[1] ).to.be.instanceOf( Event )
-        expect( heardEvents1[1].type ).to.equal( 'wasChanged' )
-        expect( heardEvents1[1].concept ).to.equal( S1 )
-        expect( heardEvents1[1].key ).to.equal( 'x' )
-        expect( heardEvents1[1].oldValue ).to.equal( undefined )
-        expect( heardEvents1[1].newValue ).to.equal( 'y' )
-        expect( heardEvents2.length ).to.equal( 0 )
-        // verify that all requisite events are called in the right order when
-        // changing an attribute
-        S1.setAttribute( 'x', 'z' )
-        expect( heardEvents1.length ).to.equal( 4 )
-        expect( heardEvents1[2] ).to.be.instanceOf( Event )
-        expect( heardEvents1[2].type ).to.equal( 'willBeChanged' )
-        expect( heardEvents1[2].concept ).to.equal( S1 )
-        expect( heardEvents1[2].key ).to.equal( 'x' )
-        expect( heardEvents1[2].oldValue ).to.equal( 'y' )
-        expect( heardEvents1[2].newValue ).to.equal( 'z' )
-        expect( heardEvents1[3] ).to.be.instanceOf( Event )
-        expect( heardEvents1[3].type ).to.equal( 'wasChanged' )
-        expect( heardEvents1[3].concept ).to.equal( S1 )
-        expect( heardEvents1[3].key ).to.equal( 'x' )
-        expect( heardEvents1[3].oldValue ).to.equal( 'y' )
-        expect( heardEvents1[3].newValue ).to.equal( 'z' )
-        expect( heardEvents2.length ).to.equal( 0 )
-        // verify that all requisite events are called in the right order when
-        // removing an attribute
-        S1.clearAttributes( 'x' )
-        expect( heardEvents1.length ).to.equal( 6 )
-        expect( heardEvents1[4] ).to.be.instanceOf( Event )
-        expect( heardEvents1[4].type ).to.equal( 'willBeChanged' )
-        expect( heardEvents1[4].concept ).to.equal( S1 )
-        expect( heardEvents1[4].key ).to.equal( 'x' )
-        expect( heardEvents1[4].oldValue ).to.equal( 'z' )
-        expect( heardEvents1[4].newValue ).to.equal( undefined )
-        expect( heardEvents1[5] ).to.be.instanceOf( Event )
-        expect( heardEvents1[5].type ).to.equal( 'wasChanged' )
-        expect( heardEvents1[5].concept ).to.equal( S1 )
-        expect( heardEvents1[5].key ).to.equal( 'x' )
-        expect( heardEvents1[5].oldValue ).to.equal( 'z' )
-        expect( heardEvents1[5].newValue ).to.equal( undefined )
-        expect( heardEvents2.length ).to.equal( 0 )
-        // ensure that these events happen not only in the correct order, but
-        // that the first happens before the value changes and the second
-        // happens after the value changes
-        let before = null
-        let after = null
-        S2.addEventListener( 'willBeChanged',
-            e => { before = S2.getAttribute( 'a' ) } )
-        S2.addEventListener( 'wasChanged',
-            e => { after = S2.getAttribute( 'a' ) } )
-        S2.setAttribute( 'a', 'bee' )
-        // (these checks are analogous to ones we've done before)
-        expect( heardEvents2.length ).to.equal( 2 )
-        expect( heardEvents2[0] ).to.be.instanceOf( Event )
-        expect( heardEvents2[0].type ).to.equal( 'willBeChanged' )
-        expect( heardEvents2[0].concept ).to.equal( S2 )
-        expect( heardEvents2[0].key ).to.equal( 'a' )
-        expect( heardEvents2[0].oldValue ).to.equal( undefined )
-        expect( heardEvents2[0].newValue ).to.equal( 'bee' )
-        expect( heardEvents2[1] ).to.be.instanceOf( Event )
-        expect( heardEvents2[1].type ).to.equal( 'wasChanged' )
-        expect( heardEvents2[1].concept ).to.equal( S2 )
-        expect( heardEvents2[1].key ).to.equal( 'a' )
-        expect( heardEvents2[1].oldValue ).to.equal( undefined )
-        expect( heardEvents2[1].newValue ).to.equal( 'bee' )
-        expect( heardEvents1.length ).to.equal( 6 )
-        // (these final checks are the new ones about before/after the change)
-        expect( before ).to.equal( undefined )
-        expect( after ).to.equal( 'bee' )
     } )
 
     it( 'Supports adding attributes with the convenience function', () => {
@@ -1864,6 +1664,65 @@ describe( 'MathConcept copying and serialization', () => {
         AB.setAttribute( 2, 9 )
         expect( AB.getAttribute( 2 ) ).to.equal( 9 )
         expect( DAB.getAttribute( 2 ) ).to.equal( 7 )
+    } )
+
+    it( 'Supports copying just some children using slice()', () => {
+        // Make a nonatomic MathConcept for testing.
+        let A, AA, AB, AC, B, C, D
+        const nonatomic = new MathConcept(
+            A = new MathConcept(
+                AA = new MathConcept,
+                AB = new MathConcept,
+                AC = new MathConcept
+            ),
+            B = new MathConcept,
+            C = new MathConcept,
+            D = new MathConcept
+        )
+        AB.setAttribute( 2, 7 )
+        C.setAttribute( 'is C', 'yes' )
+        // Make various copies and test them against the original
+        // First, a copy that uses slice() to include ALL children
+        const copy1 = nonatomic.slice()
+        expect( copy1 ).not.to.equal( nonatomic )
+        expect( copy1.children().length ).to.equal( 4 )
+        expect( copy1.child( 0 ).equals( A ) ).to.equal( true )
+        expect( copy1.child( 1 ).equals( B ) ).to.equal( true )
+        expect( copy1.child( 2 ).equals( C ) ).to.equal( true )
+        expect( copy1.child( 3 ).equals( D ) ).to.equal( true )
+        expect( copy1.child( 0, 1 ).getAttribute( 2 ) ).to.equal( 7 )
+        expect( copy1.child( 2 ).getAttribute( 'is C' ) ).to.equal( 'yes' )
+        // Next, a copy that uses only children 1 and onward
+        const copy2 = nonatomic.slice( 1 )
+        expect( copy2 ).not.to.equal( nonatomic )
+        expect( copy2.children().length ).to.equal( 3 )
+        expect( copy2.child( 0 ).equals( B ) ).to.equal( true )
+        expect( copy2.child( 1 ).equals( C ) ).to.equal( true )
+        expect( copy2.child( 2 ).equals( D ) ).to.equal( true )
+        expect( copy2.child( 1 ).getAttribute( 'is C' ) ).to.equal( 'yes' )
+        // Next, a copy that uses only children up to but not including 2
+        const copy3 = nonatomic.slice( 0, 2 )
+        expect( copy3 ).not.to.equal( nonatomic )
+        expect( copy3.children().length ).to.equal( 2 )
+        expect( copy3.child( 0 ).equals( A ) ).to.equal( true )
+        expect( copy3.child( 1 ).equals( B ) ).to.equal( true )
+        expect( copy3.child( 0, 1 ).getAttribute( 2 ) ).to.equal( 7 )
+        // Next, a copy that uses children 1 and 2
+        const copy4 = nonatomic.slice( 1, 3 )
+        expect( copy4 ).not.to.equal( nonatomic )
+        expect( copy4.children().length ).to.equal( 2 )
+        expect( copy4.child( 0 ).equals( B ) ).to.equal( true )
+        expect( copy4.child( 1 ).equals( C ) ).to.equal( true )
+        expect( copy4.child( 1 ).getAttribute( 'is C' ) ).to.equal( 'yes' )
+        // Next, a copy that uses just one child
+        const copy5 = nonatomic.slice( 1, 2 )
+        expect( copy5 ).not.to.equal( nonatomic )
+        expect( copy5.children().length ).to.equal( 1 )
+        expect( copy5.child( 0 ).equals( B ) ).to.equal( true )
+        // Finally, a copy that uses no children
+        const copy6 = nonatomic.slice( 2, 2 )
+        expect( copy6 ).not.to.equal( nonatomic )
+        expect( copy6.children().length ).to.equal( 0 )
     } )
 
     it( 'Serializes and deserializes hierarchies correctly', () => {

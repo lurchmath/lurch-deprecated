@@ -20,7 +20,8 @@
   "scripts": {
     "core-test": "node core/src/database/generate.js && node --trace-warnings core/tests/all-in-puppeteer.js",
     "build-db": "node core/src/database/generate.js",
-    "test-server": "node core/src/database/generate.js && node core/tests/test-server.cjs"
+    "test-server": "node core/src/database/generate.js && node core/tests/test-server.cjs",
+    "lode": "node engine/lode.js"
   },
   "repository": {
     "type": "git",
