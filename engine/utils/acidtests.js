@@ -96,6 +96,7 @@ loadtest('reals','math299')
 loadtest('sets','math299')
 loadtest('BIHchain','math299','txt','putdown','small BIH & trans chain test')
 loadtest('inapplicable','math299','txt','putdown','testing an inapplicable')
+
 // Misc test zone - edit for one-off tests
 // loadtest(filename, studentFolder, ext, 'putdown/lurch', filename)
 
@@ -122,6 +123,7 @@ let numindets = 0
 let numinvalids = 0
 let numinapps = 0
 
+const endTime = Date.now()
 acid.forEach( (T,k) => {
   if (typeof T === 'string') { write(T) ; failed++; return }
   // for each test, if a description was provided, use that, otherwise find the first comment, if any, in the test file.
@@ -177,7 +179,7 @@ console.log(`Test result stored in the array 'acid'\n`)
 
 ///////////////////////////////////////////////////////////
 // closing
-console.log(defaultPen(`done! (${msToTime(Date.now()-start)})`))
+console.log(defaultPen(`done! (${msToTime(endTime-start)})`))
 // don't echo anything
 undefined
 ///////////////////////////////////////////////////////////
