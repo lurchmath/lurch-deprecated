@@ -734,6 +734,19 @@ export class MathConcept {
         return false
     }
 
+    /**
+     * One common reason for traversing the ancestor tree is to find its root,
+     * which is the first ancestor that does not have a parent.  This function
+     * makes it easy to do that without resorting to a clunky call to some other
+     * more general function.
+     * 
+     * @return {MathConcept} the topmost ancestor of this MathConcept
+     * @see {@link MathConcept#ancestors ancestors()}
+     */
+    root () {
+        return this._parent ? this._parent.root() : this
+    }
+
     //////
     //
     //  Functions altering tree structure

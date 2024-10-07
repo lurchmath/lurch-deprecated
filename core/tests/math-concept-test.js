@@ -819,7 +819,7 @@ describe( 'MathConcept lookup', () => {
         expect( A.index( [ -2, 1 ] ) ).to.be.undefined
     } )
 
-    it( 'Correctly computes ancestor chains', () => {
+    it( 'Correctly computes ancestor chains and root nodes', () => {
         // Make a similar small MathConcept hierarchy as in earlier tests.
         let A, AA, AAA, AB, B
         const root = new MathConcept(
@@ -839,6 +839,14 @@ describe( 'MathConcept lookup', () => {
         expect( AAA.ancestors() ).to.eql( [ AAA, AA, A, root ] )
         expect( AB.ancestors() ).to.eql( [ AB, A, root ] )
         expect( B.ancestors() ).to.eql( [ B, root ] )
+
+        // Compute root of everything and verify it's always root.
+        expect( root.root() ).to.equal( root )
+        expect( A.root() ).to.equal( root )
+        expect( AA.root() ).to.equal( root )
+        expect( AAA.root() ).to.equal( root )
+        expect( AB.root() ).to.equal( root )
+        expect( B.root() ).to.equal( root )
     } )
 
 } )

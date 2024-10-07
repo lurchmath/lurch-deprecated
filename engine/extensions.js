@@ -382,16 +382,7 @@ Environment.prototype.scopes = function ( ) {
 }
 
 // TODO: many routines take both doc and target as arguments.  We could just
-//       take the target and use this .root() method to determine the doc.
-/**
- * Compute the topmost ancestor of this LC.  This corresponds to the 
- * Document containing the LC.
- * 
- * @memberof Extensions
- */
-LogicConcept.prototype.root = function ( ) {
-  return this.ancestorsSatisfying( x => !x.parent() )[0]
-}
+//       take the target and use the .root() method to determine the doc.
 
 /**
  * Compute the array of all ForSomes's in this LC.  If the argument is true,
