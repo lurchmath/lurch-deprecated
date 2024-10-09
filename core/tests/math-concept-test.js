@@ -293,7 +293,7 @@ describe( 'MathConcept manipulation', () => {
         expect( B.parent() ).to.equal( null )
     } )
 
-    it( 'Supports inserting MathConcepts', () => {
+    it( 'Supports inserting MathConcepts with insertChild()', () => {
         // Make the same small MathConcept hierarchy as in the previous test.
         let A, AA, AB, B
         const root = new MathConcept(
@@ -321,7 +321,7 @@ describe( 'MathConcept manipulation', () => {
         expect( AB.parent() ).to.equal( A )
         expect( C.parent() ).to.equal( root )
         expect( B.parent() ).to.equal( root )
-        
+
         // Append a child to the end of the list of children of a child of the root and
         // verify that the structure is as expected.
         const D = new MathConcept
@@ -365,6 +365,295 @@ describe( 'MathConcept manipulation', () => {
         // Do the same test again, but this time just moving something to be a later
         // sibling within the same parent.
         root.insertChild( A, 2 )
+        expect( root.children() ).to.eql( [ AA, C, A, B ] )
+        expect( A.children() ).to.eql( [ AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( root )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+
+        // Ensure that numChildren() and isAtomic() still give the right answer in each case
+        expect( root.numChildren() ).to.equal( 4 )
+        expect( A.numChildren() ).to.equal( 2 )
+        expect( AA.numChildren() ).to.equal( 0 )
+        expect( AB.numChildren() ).to.equal( 0 )
+        expect( B.numChildren() ).to.equal( 0 )
+        expect( root.isAtomic() ).to.equal( false )
+        expect( A.isAtomic() ).to.equal( false )
+        expect( AA.isAtomic() ).to.equal( true )
+        expect( AB.isAtomic() ).to.equal( true )
+        expect( B.isAtomic() ).to.equal( true )
+    } )
+
+    it( 'Supports inserting MathConcepts with insertChild()', () => {
+        // Make the same small MathConcept hierarchy as in the previous test.
+        let A, AA, AB, B
+        const root = new MathConcept(
+            A = new MathConcept(
+                AA = new MathConcept,
+                AB = new MathConcept
+            ),
+            B = new MathConcept
+        )
+        
+        // Add a new child of the root and verify that the structure is as expected.
+        const C = new MathConcept
+        expect( C.parent() ).to.equal( null )
+        expect( C.children() ).to.eql( [ ] )
+        root.insertChild( C, 1 )
+        expect( root.children() ).to.eql( [ A, C, B ] )
+        expect( A.children() ).to.eql( [ AA, AB ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( A )
+        expect( AB.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+
+        // Append a child to the end of the list of children of a child of the root and
+        // verify that the structure is as expected.
+        const D = new MathConcept
+        expect( D.parent() ).to.equal( null )
+        expect( D.children() ).to.eql( [ ] )
+        A.insertChild( D, 2 )
+        expect( root.children() ).to.eql( [ A, C, B ] )
+        expect( A.children() ).to.eql( [ AA, AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( A )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+        
+        // Insert as the first child of the root a child from elsewhere in the
+        // hierarchy, and verify that it is removed from one place and inserted in the
+        // other.
+        root.insertChild( AA, 0 )
+        expect( root.children() ).to.eql( [ AA, A, C, B ] )
+        expect( A.children() ).to.eql( [ AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( root )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+        
+        // Do the same test again, but this time just moving something to be a later
+        // sibling within the same parent.
+        root.insertChild( A, 2 )
+        expect( root.children() ).to.eql( [ AA, C, A, B ] )
+        expect( A.children() ).to.eql( [ AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( root )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+
+        // Ensure that numChildren() and isAtomic() still give the right answer in each case
+        expect( root.numChildren() ).to.equal( 4 )
+        expect( A.numChildren() ).to.equal( 2 )
+        expect( AA.numChildren() ).to.equal( 0 )
+        expect( AB.numChildren() ).to.equal( 0 )
+        expect( B.numChildren() ).to.equal( 0 )
+        expect( root.isAtomic() ).to.equal( false )
+        expect( A.isAtomic() ).to.equal( false )
+        expect( AA.isAtomic() ).to.equal( true )
+        expect( AB.isAtomic() ).to.equal( true )
+        expect( B.isAtomic() ).to.equal( true )
+    } )
+
+    it( 'Supports inserting MathConcepts with insertBefore()', () => {
+        // Make the same small MathConcept hierarchy as in the previous test.
+        let A, AA, AB, B
+        const root = new MathConcept(
+            A = new MathConcept(
+                AA = new MathConcept,
+                AB = new MathConcept
+            ),
+            B = new MathConcept
+        )
+        
+        // Add a new child of the root and verify that the structure is as expected.
+        const C = new MathConcept
+        expect( C.parent() ).to.equal( null )
+        expect( C.children() ).to.eql( [ ] )
+        C.insertBefore( B )
+        expect( root.children() ).to.eql( [ A, C, B ] )
+        expect( A.children() ).to.eql( [ AA, AB ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( A )
+        expect( AB.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+
+        // Append D as in the previous test, but it can't be done with
+        // insertBefore(), so we just do it with insertChild() to keep this test
+        // consistent with the previous.  No need to re-test that the same
+        // behavior results; it was already tested above.
+        const D = new MathConcept
+        A.insertChild( D, 2 )
+        
+        // Insert as the first child of the root a child from elsewhere in the
+        // hierarchy, and verify that it is removed from one place and inserted in the
+        // other.
+        AA.insertBefore( A )
+        expect( root.children() ).to.eql( [ AA, A, C, B ] )
+        expect( A.children() ).to.eql( [ AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( root )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+        
+        // Move A as in the previous test, but it can't be done with
+        // insertBefore(), so we just do it with insertChild() to keep this test
+        // consistent with the previous.  No need to re-test that the same
+        // behavior results; it was already tested above.
+        root.insertChild( A, 2 )
+        expect( root.children() ).to.eql( [ AA, C, A, B ] )
+        expect( A.children() ).to.eql( [ AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( root )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+
+        // Ensure that numChildren() and isAtomic() still give the right answer in each case
+        expect( root.numChildren() ).to.equal( 4 )
+        expect( A.numChildren() ).to.equal( 2 )
+        expect( AA.numChildren() ).to.equal( 0 )
+        expect( AB.numChildren() ).to.equal( 0 )
+        expect( B.numChildren() ).to.equal( 0 )
+        expect( root.isAtomic() ).to.equal( false )
+        expect( A.isAtomic() ).to.equal( false )
+        expect( AA.isAtomic() ).to.equal( true )
+        expect( AB.isAtomic() ).to.equal( true )
+        expect( B.isAtomic() ).to.equal( true )
+    } )
+
+    it( 'Supports inserting MathConcepts with insertAfter()', () => {
+        // Make the same small MathConcept hierarchy as in the previous test.
+        let A, AA, AB, B
+        const root = new MathConcept(
+            A = new MathConcept(
+                AA = new MathConcept,
+                AB = new MathConcept
+            ),
+            B = new MathConcept
+        )
+        
+        // Add a new child of the root and verify that the structure is as expected.
+        const C = new MathConcept
+        expect( C.parent() ).to.equal( null )
+        expect( C.children() ).to.eql( [ ] )
+        C.insertAfter( A )
+        expect( root.children() ).to.eql( [ A, C, B ] )
+        expect( A.children() ).to.eql( [ AA, AB ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( A )
+        expect( AB.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+
+        // Append a child to the end of the list of children of a child of the root and
+        // verify that the structure is as expected.
+        const D = new MathConcept
+        expect( D.parent() ).to.equal( null )
+        expect( D.children() ).to.eql( [ ] )
+        D.insertAfter( AB )
+        expect( root.children() ).to.eql( [ A, C, B ] )
+        expect( A.children() ).to.eql( [ AA, AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( A )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+        
+        // Move AA as in the previous test, but it can't be done with
+        // insertAfter(), so we just do it with insertChild() to keep this test
+        // consistent with the previous.  No need to re-test that the same
+        // behavior results; it was already tested above.
+        root.insertChild( AA, 0 )
+        expect( root.children() ).to.eql( [ AA, A, C, B ] )
+        expect( A.children() ).to.eql( [ AB, D ] )
+        expect( AA.children() ).to.eql( [ ] )
+        expect( AB.children() ).to.eql( [ ] )
+        expect( D.children() ).to.eql( [ ] )
+        expect( C.children() ).to.eql( [ ] )
+        expect( B.children() ).to.eql( [ ] )
+        expect( root.parent() ).to.equal( null )
+        expect( A.parent() ).to.equal( root )
+        expect( AA.parent() ).to.equal( root )
+        expect( AB.parent() ).to.equal( A )
+        expect( D.parent() ).to.equal( A )
+        expect( C.parent() ).to.equal( root )
+        expect( B.parent() ).to.equal( root )
+        
+        // Do the same test again, but this time just moving something to be a later
+        // sibling within the same parent.
+        A.insertAfter( C )
         expect( root.children() ).to.eql( [ AA, C, A, B ] )
         expect( A.children() ).to.eql( [ AB, D ] )
         expect( AA.children() ).to.eql( [ ] )

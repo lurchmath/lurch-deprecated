@@ -83,30 +83,6 @@ LogicConcept.prototype.some = function ( predicate ) {
   return false  
 }
 
-/**
- * Insert this LC as the next sibling of LC target. You might have to make a
- * copy of 'this' if it is already in the same tree as the target. We don't
- * check that here.
- *
- * @memberof Extensions
- * @param {LogicConcept} target 
- */
-LogicConcept.prototype.insertAfter = function( target ) { 
-  target.parent().insertChild(this,target.indexInParent()+1)
-}
-
-/**
- * Insert this LC as the previous sibling of LC target. You might have to make a
- * copy of 'this' if it is already in the same tree as the target. We don't
- * check that here.
- *
- * @memberof Extensions
- * @param {LogicConcept} target
- */
-LogicConcept.prototype.insertBefore = function( target ) { 
-  target.parent().insertChild(this,target.indexInParent())
-}
-
 /** Rename this Lurch symbol (in place).
  * 
  * @memberof Extensions

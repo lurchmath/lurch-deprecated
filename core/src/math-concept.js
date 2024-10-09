@@ -792,6 +792,50 @@ export class MathConcept {
     }
 
     /**
+     * Insert this MathConcept as the previous sibling of the given `target`.
+     * If the target is not a MathConcept or has no parent, this does nothing.
+     * Otherwise, it uses {@link MathConcept#insertChild insertChild()} to
+     * insert this MathConcept as a child of the target's parent, at the index
+     * immediately before the given target.
+     * 
+     * @param {MathConcept} target - the MathConcept before which to insert this
+     *   one
+     * @see {@link MathConcept#insertAfter insertAfter()}
+     * @see {@link MathConcept#insertChild insertChild()}
+     */
+    insertBefore ( target ) {
+        if ( !( target instanceof MathConcept ) ) return
+        const newParent = target.parent()
+        if ( !newParent ) return
+        let newIndex = target.indexInParent()
+        if ( this.parent() == target.parent() && this.indexInParent() < newIndex )
+            newIndex--
+        newParent.insertChild( this, newIndex )
+    }
+
+    /**
+     * Insert this MathConcept as the next sibling of the given `target`.
+     * If the target is not a MathConcept or has no parent, this does nothing.
+     * Otherwise, it uses {@link MathConcept#insertChild insertChild()} to
+     * insert this MathConcept as a child of the target's parent, at the index
+     * immediately after the given target.
+     * 
+     * @param {MathConcept} target - the MathConcept before which to insert this
+     *   one
+     * @see {@link MathConcept#insertBefore insertBefore()}
+     * @see {@link MathConcept#insertChild insertChild()}
+     */
+    insertAfter ( target ) {
+        if ( !( target instanceof MathConcept ) ) return
+        const newParent = target.parent()
+        if ( !newParent ) return
+        let newIndex = target.indexInParent() + 1
+        if ( this.parent() == target.parent() && this.indexInParent() < newIndex )
+            newIndex--
+        newParent.insertChild( this, newIndex )
+    }
+
+    /**
      * If this MathConcept has a parent, remove this from its parent's child list
      * and set our parent pointer to null, thus severing the relationship.  If
      * this has no parent, do nothing.
