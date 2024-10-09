@@ -83,15 +83,6 @@ LogicConcept.prototype.some = function ( predicate ) {
   return false  
 }
 
-/** Rename this Lurch symbol (in place).
- * 
- * @memberof Extensions
- * @param {string} newname
- */
-LurchSymbol.prototype.rename = function( newname ) { 
-  this.setAttribute( 'symbol text' , newname )
-}
-
 /**
  * Return the Proper Name for a Lurch symbol if it has one, otherwise just
  * return the name of the symbol.

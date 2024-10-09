@@ -31,6 +31,27 @@ describe( 'Symbol', () => {
         expect( S.text() ).to.equal( 'undefined' )
     } )
 
+    it( 'Should let us change the text and yield the new value upon query', () => {
+        // Create one symbols, then change its text to all the examples above,
+        // re-checking it with text() in each case.
+        const S = new LurchSymbol( 'hello' )
+        expect( S.text() ).to.equal( 'hello' )
+        S.setText( '1' )
+        expect( S.text() ).to.equal( '1' )
+        S.setText( 'Four score and seven years ago' )
+        expect( S.text() ).to.equal( 'Four score and seven years ago' )
+        S.setText( 'αβγδε' )
+        expect( S.text() ).to.equal( 'αβγδε' )
+        S.setText( 'x₁' )
+        expect( S.text() ).to.equal( 'x₁' )
+        S.setText( { } )
+        expect( S.text() ).to.equal( '[object Object]' )
+        S.setText( [ ] )
+        expect( S.text() ).to.equal( 'undefined' )
+        S.setText()
+        expect( S.text() ).to.equal( 'undefined' )
+    } )
+
     it( 'Should have a toString() representation equal to its text', () => {
         // Exactly the same test as the previous, but with toString() instead
         let S = new LurchSymbol( 'hello' )

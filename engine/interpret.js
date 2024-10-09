@@ -388,7 +388,7 @@ const replaceBindings = ( expr , symb='y' ) => {
   let counter = 0
   const solve = e => {
       if ( e instanceof LurchSymbol && stack.has(e.text()) ) 
-          e.rename( get( e.text() ) )
+          e.setText( get( e.text() ) )
       if ( e instanceof BindingExpression ) {
           push()
           e.boundSymbolNames().forEach( name => {

@@ -41,8 +41,7 @@ export class Symbol extends Expression {
      */
     constructor ( text ) {
         super()
-        text = String( text )
-        this.setAttribute( 'symbol text', text === '' ? 'undefined' : text )
+        this.setText( text )
     }
 
     /**
@@ -58,14 +57,28 @@ export class Symbol extends Expression {
     insertChild () { }
 
     /**
-     * A Symbol never changes its text.  To have a new Symbol, just construct
-     * a new one with the new text, rather than trying to re-use an old one
-     * and change its text.  Consequently, this function returns the text
-     * given at the time the Symbol was constructed.
+     * A Symbol stores its text in an attribute, and this function retrieves the
+     * value of that attribute.
      * 
-     * @returns {String} the text given at construction time
+     * @returns {String} the text defining the symbol
+     * @see {@link Symbol}
+     * @see {@link Symbol#setText setText()}
      */
     text () { return this.getAttribute( 'symbol text' ) }
+
+    /**
+     * A Symbol stores its text in an attribute, and this function changes the
+     * value of that attribute.  If a non-string is passed in, it will be
+     * converted into one with the `String` constructor.
+     * 
+     * @param {String} text - the new text for the symbol
+     * @see {@link Symbol}
+     * @see {@link Symbol#text text()}
+     */
+    setText ( text ) {
+        text = String( text )
+        this.setAttribute( 'symbol text', text === '' ? 'undefined' : text )
+    }
 
     /**
      * This method overrides {@link MathConcept#toString the implementation in
