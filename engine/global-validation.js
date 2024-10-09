@@ -471,7 +471,7 @@ const processBIHs = doc => {
           found = true
           const inst = Formula.instantiate(f, s)
           assignProperNames(inst)
-          if (toggle) inst.toggleGiven()
+          if (toggle) inst.toggle( 'given' )
           inst.unmakeIntoA('Rule')
           inst.unmakeIntoA('Part')
           inst.makeIntoA('Inst')
@@ -484,7 +484,7 @@ const processBIHs = doc => {
           Formula.addCachedInstantiation(f, inst)
         })
       } catch { }
-      if (toggle) { f.toggleGiven() }
+      if (toggle) { f.toggle( 'given' ) }
     })
     // if it's not a BIH, mark it as such with .badBIH
     // TODO: remove this eventually when we make the switch
@@ -1486,17 +1486,17 @@ LogicConcept.prototype._validate = function (target = this,
   const satCheck = (doc, target, checkPreemies = false) => {
     let answer
     // negate this
-    doc.negate()
+    doc.toggle( 'given' )
     try {
       answer = !CNF.isSatisfiable(this.cnf(target, checkPreemies))
     } catch (e) {
-      doc.negate()
+      doc.toggle( 'given' )
       console.log(`\nError validating the following for ${(checkPreemies) ? 'preemies' : 'prop'}:\n`)
       console.log(target)
       console.log(`at address: ${target.address()}`)
     }
     // un-negate this
-    doc.negate()
+    doc.toggle( 'given' )
     return answer
   }
 

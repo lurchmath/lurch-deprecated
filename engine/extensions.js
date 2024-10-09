@@ -95,25 +95,6 @@ LurchSymbol.prototype.properName = function () {
          : this.text() 
 }
 
-/** 
- * Toggle the 'given' status of an LC (in place). 
- * 
- * @memberof Extensions
- */
-LogicConcept.prototype.negate = function () {
-  if (this.isA('given')) { this.unmakeIntoA('given') 
-  } else { this.makeIntoA('given') 
-  }
-}
-
-/** 
- * Synonym for 'negate'. 
- * 
- * @function
- * @memberof Extensions 
-*/
-LogicConcept.prototype.toggleGiven = LogicConcept.prototype.negate
-
 /////////////////////////////////////////////////////////////////////
 // LC type checking and fetching
 

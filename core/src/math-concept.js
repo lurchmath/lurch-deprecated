@@ -311,6 +311,7 @@ export class MathConcept {
      * @see {@link MathConcept#isA isA()}
      * @see {@link MathConcept#asA asA()}
      * @see {@link MathConcept#unmakeIntoA unmakeIntoA()}
+     * @see {@link MathConcept#toggle toggle()}
      */
     makeIntoA ( type ) {
         this.setAttribute( MathConcept.typeAttributeKey( type ), true )
@@ -321,9 +322,9 @@ export class MathConcept {
      * For a full explanation of the typing features afforded by this function,
      * see the documentation for {@link MathConcept#isA isA()}.
      *
-     * This function removes the requested type to the MathConcept's attributes
-     * and returns the MathConcept itself, for use in method chaining, as in
-     * `S.unmakeIntoA( 'fruit' ).setAttribute( 'sad', true )`.
+     * This function removes the requested type from the MathConcept's
+     * attributes and returns the MathConcept itself, for use in method
+     * chaining, as in `S.unmakeIntoA( 'fruit' ).setAttribute( 'sad', true )`.
      *
      * Admittedly, this is a pretty bad name for a function, but it is the
      * reverse of {@link MathConcept#makeIntoA makeIntoA()}, so there you go.
@@ -333,9 +334,38 @@ export class MathConcept {
      * @see {@link MathConcept#isA isA()}
      * @see {@link MathConcept#asA asA()}
      * @see {@link MathConcept#makeIntoA makeIntoA()}
+     * @see {@link MathConcept#toggle toggle()}
      */
     unmakeIntoA ( type ) {
         this.clearAttributes( MathConcept.typeAttributeKey( type ) )
+        return this
+    }
+
+    /**
+     * For a full explanation of the typing features afforded by this function,
+     * see the documentation for {@link MathConcept#isA isA()}.
+     *
+     * This function toggles the requested type in the MathConcept's attributes
+     * and returns the MathConcept itself, for use in method chaining, as in
+     * `S.toggle( 'fruit' ).setAttribute( 'size', 'large' )`.  In other words,
+     * this function is equivalent to a call to either
+     * {@link MathConcept#makeIntoA makeIntoA()} or
+     * {@link MathConcept#unmakeIntoA unmakeIntoA()}, depending on whether the
+     * MathConcept already has that type, as checked by
+     * {@link MathConcept#isA isA()}.
+     *
+     * @param {string} type - The type to toggle in this MathConcept
+     * @return {MathConcept} This MathConcept, after the change has been made to it
+     * @see {@link MathConcept#isA isA()}
+     * @see {@link MathConcept#asA asA()}
+     * @see {@link MathConcept#makeIntoA makeIntoA()}
+     * @see {@link MathConcept#unmakeIntoA unmakeIntoA()}
+     */
+    toggle ( type ) {
+        if ( this.isA( type ) )
+            this.unmakeIntoA( type )
+        else
+            this.makeIntoA( type )
         return this
     }
 
