@@ -393,7 +393,7 @@ describe( 'MathConcept manipulation', () => {
         expect( B.isAtomic() ).to.equal( true )
     } )
 
-    it( 'Ssupports replacing MathConcepts', () => {
+    it( 'Supports replacing MathConcepts', () => {
 
         // Make the same small MathConcept hierarchy as in the previous test.
         let A, AA, AB, B
