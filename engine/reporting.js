@@ -439,6 +439,16 @@ Set.prototype.numbered = numberedIterable
 const _investigate = function ( suspect , options ) {
   // a utility
   const display = x => `\n  ${format(x,detailed).replace(/\n/g,'\n  ')}`
+  // another utility, this one computing the array of all instantiations in the
+  // document that contain a proposition that has the same propositional form as
+  // a given proposition `e`
+  const mentionsIn = (e, inThis) => {
+    write(e)
+    const eprop = e.prop()
+    return [...inThis.descendantsSatisfyingIterator( x => {
+      return (x.isA('Inst')) && x.propositions().some( p => p.prop() === eprop )
+    })]
+  }
   
   if (options === 'verbose' ) {
     let ans = ''
@@ -454,7 +464,7 @@ const _investigate = function ( suspect , options ) {
     } else {
       // get the instantiations that mention it
       const root = suspect.root()
-      const mentions = root.mentions(suspect)
+      const mentions = mentionsIn(suspect, root)
       if (!mentions.length) {
         ans += `The expression ${display(suspect)}`
         ans += `does not appear in any instantiations.`
@@ -505,7 +515,7 @@ const _investigate = function ( suspect , options ) {
     } else {
       // get the instantiations that mention it
       const root = suspect.root()
-      const mentions = root.mentions(suspect)
+      const mentions = mentionsIn(suspect, root)
       if (!mentions.length) {
         ans += `The expression ${display(suspect)}\ndoes not appear in any instantiations.`
       } else {
