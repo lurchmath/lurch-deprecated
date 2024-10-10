@@ -66,24 +66,6 @@ LogicConcept.prototype.find = function ( include = x=>true , exclude = x=>false 
 }
 
 /**
- * Efficiently check if an LC has a descendant satisfying some predicate it
- * aborts the search as soon as it finds one.  This is analogous to the same
- * method for js arrays.
- * 
- * @memberof Extensions
- * @param {function(): boolean} predicate - the predicate
- */
-LogicConcept.prototype.some = function ( predicate ) {
-  const gen = this.descendantsIterator()
-  let descendant = gen.next()
-  while (!descendant.done) { 
-    if (predicate(descendant.value)) { return true }
-    descendant=gen.next() 
-  }
-  return false  
-}
-
-/**
  * Return the Proper Name for a Lurch symbol if it has one, otherwise just
  * return the name of the symbol.
  * 
@@ -544,7 +526,7 @@ Expression.prototype.allProps = function ( ) {
   // TODO: is it more efficient to eliminate any scopes not involving any of the
   // tick-marked symbols in this expression, or would that take more time than
   // simply checking against all of the scopes?
-  } else if (this.some( x => 
+  } else if (this.hasDescendantSatisfying( x => 
     x instanceof LurchSymbol && 
     x.properName().endsWith("'") &&
     !x.constant
@@ -583,7 +565,7 @@ Environment.prototype.catalog = function ( ) {
   // forms for such a proposition, we need to know all of the let-scopes in the
   // document.  Ignore everything containing a metavariable.
   this.propositions()
-      .filter( P => !P.some( x => x.isA('LDE MV') ) )
+      .filter( P => !P.hasDescendantSatisfying( x => x.isA('LDE MV') ) )
       .map( s => s.allProps() )
       .forEach( x => catalog = catalog.union( x ) )
   return [ ...catalog ] 

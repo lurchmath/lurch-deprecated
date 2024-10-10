@@ -43,9 +43,11 @@ const getEquationResult = chain => {
   // for now we only need this for the case where a chain has an ID from web files
   if (!id) return  
   const someHas = result => {
-    return chain.root().some( eq => eq.getAttribute('_id')==id &&
-                         Validation.result(eq) &&
-                         Validation.result(eq).result==result)
+    return chain.root().hasDescendantSatisfying(
+      eq => eq.getAttribute('_id')==id &&
+      Validation.result(eq) &&
+      Validation.result(eq).result==result
+    )
   }
   // check the results in order
   if (someHas('invalid')) return 'invalid'
