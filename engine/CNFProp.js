@@ -208,7 +208,6 @@ export class CNFProp {
    * Propositional Form} for details.
    */
   toAlgebraic ( n = Infinity ) {
-    const A = 'A'.charCodeAt(0)
     let ans = this.kids.map( x => {
       // convert nonzero integers to variables 
       if ( Number.isInteger(x) ) { return CNFProp.toVar(x,n)
