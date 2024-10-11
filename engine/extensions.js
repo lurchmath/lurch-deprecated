@@ -224,24 +224,6 @@ LogicConcept.prototype.Rules = function () {
   return [...this.descendantsSatisfyingIterator( x => x.isA('Rule') )]
 }
 
-/** 
- * Compute the array of all Insts's in this LC. 
- * 
- * @memberof Extensions
- */
-LogicConcept.prototype.Insts = function () {
-  return [...this.descendantsSatisfyingIterator( x => x.isA('Inst') )]
-}
-
-/** 
- * Compute the array of all Parts's in this LC. 
- * 
- * @memberof Extensions
- */
-LogicConcept.prototype.Parts = function () {
-  return [...this.descendantsSatisfyingIterator( x => x.isA('Part') )]
-}
-
 /**
  * A Let is defined to be a given declaration that is not marked as a 'Declare'
  * whether or not it has a body
@@ -313,19 +295,6 @@ Environment.prototype.scopes = function ( ) {
 
 // TODO: many routines take both doc and target as arguments.  We could just
 //       take the target and use the .root() method to determine the doc.
-
-/**
- * Compute the array of all ForSomes's in this LC.  If the argument is true,
- * only return those with bodies.
- * 
- * @memberof Extensions
- */
-LogicConcept.prototype.forSomes = function ( onlywithbodies ) {
-  return [...this.descendantsSatisfyingIterator( x => 
-           x instanceof Declaration && !x.isA('given') && 
-           !x.isA('Declare')  &&  (!onlywithbodies || x.body())
-         )]
-}
 
 /**
  * Compute the array of all formulas that are not marked as `.finished` in this LC

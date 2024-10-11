@@ -74,3 +74,34 @@ LogicConcept.prototype.inspect = function(x) {
     { customInspect: false , showHidden: false , depth: depth , colors: true } ) 
 }
 LogicConcept.prototype.inspect = function(...args) { inspect(this,...args) }
+
+/** 
+ * Compute the array of all Insts's in this LC. 
+ * 
+ * @memberof Extensions
+ */
+LogicConcept.prototype.Insts = function () {
+    return [...this.descendantsSatisfyingIterator( x => x.isA('Inst') )]
+}
+  
+/** 
+ * Compute the array of all Parts's in this LC. 
+ * 
+ * @memberof Extensions
+ */
+LogicConcept.prototype.Parts = function () {
+    return [...this.descendantsSatisfyingIterator( x => x.isA('Part') )]
+}
+
+/**
+ * Compute the array of all ForSomes's in this LC.  If the argument is true,
+ * only return those with bodies.
+ * 
+ * @memberof Extensions
+ */
+LogicConcept.prototype.forSomes = function ( onlyWithBodies ) {
+    return [ ...this.descendantsSatisfyingIterator( x => 
+        x instanceof Declaration && !x.isA('given') && 
+        !x.isA('Declare') && (!onlyWithBodies || x.body())
+    ) ]
+}
