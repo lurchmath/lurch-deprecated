@@ -215,7 +215,7 @@ LogicConcept.prototype.Declares = function () {
 }
 
 /** 
- * Compute the array of all Rule's in this LC. 
+ * Compute the array of all Rules in this LC.
  * 
  * @memberof Extensions
  */
@@ -257,31 +257,30 @@ Declaration.prototype.letsInScope = function ( ) {
 }
 
 /**
- * Compute the array of all Let's in this LC. If the argument is true, only
+ * Compute the array of all Lets in this LC. If the argument is true, only
  * return those with bodies.
  * 
  * @memberof Extensions
- * @param {boolean} onlywithbodies - if true, only return declarations with bodies
+ * @param {boolean} onlyWithBodies - if true, only return declarations with bodies
  */
-LogicConcept.prototype.lets = function ( onlywithbodies ) {
+LogicConcept.prototype.lets = function ( onlyWithBodies ) {
   return [...this.descendantsSatisfyingIterator( x => 
-     x instanceof Declaration && x.isA('given') && 
-     !x.isA('Declare') &&  (!onlywithbodies || x.body())
+    x instanceof Declaration && x.isA('given') && 
+    !x.isA('Declare') &&  (!onlyWithBodies || x.body())
   )]
 }
 
 /**
- * Compute the array of all Let's in this environment whose parent is an
+ * Compute the array of all Lets in this environment whose parent is an
  * inference in this environment
  * 
  * @memberof Extensions
- * 
  */
 const letInferencesIn = ( environment, context ) =>
   environment.lets().filter( L => L.parent().hasOnlyClaimAncestors( context ) )
 
 /** 
- * Compute the array of arrays containing the user's various let scopes, labled by their  
+ * Compute the array of arrays containing the user's various let scopes, labeled by their
  * letAncestors.
  * 
  * @memberof Extensions
