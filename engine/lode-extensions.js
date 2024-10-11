@@ -52,3 +52,25 @@ LogicConcept.prototype.toNice = function ( target = this, checkPreemies = false 
     let cat = this.catalog()
     return say(stringPen(CNFProp.fromLC(this,cat,target,checkPreemies).toNice(cat)))
 }
+
+/** 
+ * Return an array showing all of the js attributes and LC attributes of this
+ * LC, except for those whose key begins with an underscore '_'.
+ *
+ * @memberof Extensions
+ * @return {Array} - the array of key-value pairs
+ */
+LogicConcept.prototype.attributes = function ( ) {
+    return [ 
+        ...Object.keys(this).filter(x=> x[0]!=='_').map( key => [key,this[key]]),
+        ...this.getAttributeKeys().map( key => [key,this.getAttribute(key)])  
+    ]
+}
+
+//  A utilty function to inspect the contents of an LC in the console in a nice
+// format. 
+LogicConcept.prototype.inspect = function(x) { 
+    console.log(util.inspect(x , depth = 1) , 
+    { customInspect: false , showHidden: false , depth: depth , colors: true } ) 
+}
+LogicConcept.prototype.inspect = function(...args) { inspect(this,...args) }
