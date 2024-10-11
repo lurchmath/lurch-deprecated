@@ -42,6 +42,9 @@ import {
   BindingExpression, Formula
 } from '../core/src/index.js'
 
+// Import validation-specific functions defined in the Extensions module
+import { isALetEnvironment } from './extensions.js'
+
 import { processShorthands } from './parsing.js'
 import Utilities from './utils.js'
 const { subscript } = Utilities
@@ -255,7 +258,7 @@ const processRules = doc => {
   [...doc.descendantsSatisfyingIterator(x=>x.isA('Rule'))].forEach( f => {
     // check if f is not an Environment, or is a Let-environment, and throw
     // an error either way
-    if (!f instanceof Environment || f.isALetEnvironment() )
+    if (!f instanceof Environment || isALetEnvironment(f) )
       throw new Error('A rule must be an environment that is not a Let-environment.')
     // it's not, so convert it to a formula
     // the second arg specifies it should be done in place

@@ -105,3 +105,33 @@ LogicConcept.prototype.forSomes = function ( onlyWithBodies ) {
         !x.isA('Declare') && (!onlyWithBodies || x.body())
     ) ]
 }
+
+/** 
+ * Compute the array of all environments in this LC. 
+ * 
+ * @memberof Extensions
+ */
+LogicConcept.prototype.environments = function () {
+    // this is effectively the same code as for .conclusions
+    let ans = [ ]
+    this.children().forEach( child => {
+      if (!(child instanceof Environment)) return
+      ans.push( child ) // it's an environment
+      ans = ans.concat( child.environments() )    
+    })
+    return ans  
+}
+
+/** 
+ * Compute the array of all bindings in this LC 
+ * 
+ * @memberof Extensions
+ */
+LogicConcept.prototype.bindings = function () {
+    let ans = [ ]
+    if (this instanceof BindingExpression) ans.push( this )
+    this.children().forEach( child => 
+        ans = ans.concat( child.bindings() )    
+    )
+    return ans  
+}

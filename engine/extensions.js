@@ -150,11 +150,10 @@ LogicConcept.prototype.isAProposition = function ( ignores = []) {
  * @memberof Extensions
  * @returns {boolean}
  */
-LogicConcept.prototype.isALetEnvironment = function () { 
-  return (this instanceof Environment && 
-          this.child(0) instanceof Declaration &&
-          this.child(0).isA('given'))
-}
+export const isALetEnvironment = LC =>
+  (LC instanceof Environment) && 
+  (LC.child(0) instanceof Declaration) &&
+  LC.child(0).isA('given')
 
 /**
  * We say an LC expression is a Comment if it has the form `(➤ "Comment string
@@ -220,9 +219,8 @@ LogicConcept.prototype.Declares = function () {
  * 
  * @memberof Extensions
  */
-LogicConcept.prototype.Rules = function () {
-  return [...this.descendantsSatisfyingIterator( x => x.isA('Rule') )]
-}
+export const rulesIn = LC =>
+  [...LC.descendantsSatisfyingIterator( x => x.isA('Rule') )]
 
 /**
  * A Let is defined to be a given declaration that is not marked as a 'Declare'
@@ -279,9 +277,8 @@ LogicConcept.prototype.lets = function ( onlywithbodies ) {
  * @memberof Extensions
  * 
  */
-Environment.prototype.letInferences = function ( inThis ) {
-  return this.lets().filter( L => L.parent().hasOnlyClaimAncestors( inThis ) )
-}
+const letInferencesIn = ( environment, context ) =>
+  environment.lets().filter( L => L.parent().hasOnlyClaimAncestors( context ) )
 
 /** 
  * Compute the array of arrays containing the user's various let scopes, labled by their  
@@ -289,9 +286,8 @@ Environment.prototype.letInferences = function ( inThis ) {
  * 
  * @memberof Extensions
  */
-Environment.prototype.scopes = function ( ) {
-  return this.letInferences().map( y => y.letAncestors() )
-}
+export const scopesIn = environment =>
+  letInferencesIn( environment ).map( y => y.letAncestors() )
 
 // TODO: many routines take both doc and target as arguments.  We could just
 //       take the target and use the .root() method to determine the doc.
@@ -345,36 +341,6 @@ Environment.prototype.inferences = function () {
     }    
   })
   return ans
-}
-
-/** 
- * Compute the array of all environments in this LC. 
- * 
- * @memberof Extensions
- */
-LogicConcept.prototype.environments = function () {
-  // this is effectively the same code as for .conclusions
-  let ans = [ ]
-  this.children().forEach( child => {
-    if (!(child instanceof Environment)) return
-    ans.push( child ) // it's an environment
-    ans = ans.concat( child.environments() )    
-  })
-  return ans  
-}
-
-/** 
- * Compute the array of all bindings in this LC 
- * 
- * @memberof Extensions
- */
-LogicConcept.prototype.bindings = function () {
-  let ans = [ ]
-  if (this instanceof BindingExpression) ans.push( this )
-  this.children().forEach( child => 
-      ans = ans.concat( child.bindings() )    
-  )
-  return ans  
 }
 
 /** 
