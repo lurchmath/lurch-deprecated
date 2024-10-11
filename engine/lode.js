@@ -39,6 +39,11 @@ import * as Lurch from '../core/src/index.js'
 import { Problem } from '../core/src/matching/problem.js'
 import CNF from '../core/src/validation/conjunctive-normal-form.js'
 
+// Add debugging extensions to the LogicConcept class
+// These are defined in a Lode-specific import so as not to pollute the
+// LogicConcept prototype across the whole app
+import { } from './lode-extensions.js'
+
 // Lode expects to be run from within the folder it sits in, so we ensure that:
 import path from 'path'
 process.chdir( path.dirname( new URL( import.meta.url ).pathname ) )
