@@ -123,6 +123,9 @@ import {
 } from '../core/src/index.js'
 import { isArithmetic, arithmeticToCAS } from './parsing.js'
 
+// Import validation-specific functions defined in the Extensions module
+import { rulesIn, scopesIn } from './extensions.js'
+
 const Problem = Matching.Problem
 const isAnEFA = Matching.isAnEFA
 
@@ -285,7 +288,7 @@ const validate = ( doc, target = doc , scopingMethod = Scoping.declareWhenSeen )
   // Caching
   //
   // cache the let-scopes in the root (if the aren't)
-  if (!doc.letScopes) doc.letScopes = doc.scopes()
+  if (!doc.letScopes) doc.letScopes = scopesIn(doc)
   // cache the catalog in the root
   if (!doc.cat) doc.cat = doc.catalog()
   
@@ -966,7 +969,7 @@ const processCases = doc => {
  * Find all of the Rules that have a conclusion that is a single metavariable, and only appears in the Rule as a single metavariable outermost expression (i.e., not contained in any other expression).  This is called a _caselike_ rule. 
  */
 const getCaselikeRules = doc => {
-  return doc.Rules().filter( rule => {
+  return rulesIn(doc).filter( rule => {
     const U = rule.lastChild() 
     if (!U.isA(metavariable)) return false
     const others = rule.descendantsSatisfying( x => x.equals(U) )
